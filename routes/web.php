@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\AmountController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::resource('exchange_rates', ExchangeRateController::class);
+Route::resource('amounts', AmountController::class);
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');

@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'currencies' => array(
-    'USD' => '123',
-  ),
+    'currencies' => array (
+  'EGP' => '0.2',
+),
 ];
