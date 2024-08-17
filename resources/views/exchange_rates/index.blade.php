@@ -7,7 +7,7 @@
 
 <body>
     <h1>Exchange Rates</h1>
-   
+
     <form action="{{ route('exchange_rates.store') }}" method="POST">
         @csrf
         <input type="text" name="currency" placeholder="Currency" required>
@@ -17,7 +17,21 @@
 
     <ul>
         @foreach ($currencies as $currency => $rate)
-        <li>{{ $currency }}: {{ $rate }}</li>
+        <li>
+            <form action="{{ route('exchange_rates.destroy', $currency) }}" method="post">
+                @csrf
+                @method('DELETE')
+                <input type="hidden" name="currency" value="{{$currency}}">
+                <button type="submit">Delete</button>
+            </form>
+            <form action="{{ route('exchange_rates.update', $currency) }}" method="POST" style="display:inline;">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="currency" value="{{$currency}}">
+                {{ $currency }}: <input type="text" name="rate" value="{{ $rate }}">
+                <button type="submit">Update</button>
+            </form>
+        </li>
         @endforeach
     </ul>
 </body>
