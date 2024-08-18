@@ -33,7 +33,7 @@
             <option value="" disabled>Select currency</option>
             @foreach ($currencies as $currency)
             <option value="{{ $currency['id'] }}"
-                @if ($currency['id']) selected @endif>
+                @if ($currency['id']==$amount['from']['id']) selected @endif>
                 {{ $currency['name'] }}
             </option>
             @endforeach
@@ -42,7 +42,7 @@
             <option value="" disabled>Select currency</option>
             @foreach ($currencies as $currency)
             <option value="{{ $currency['id'] }}"
-                @if ($currency['id']) selected @endif>
+                @if ($currency['id']==$amount['to']['id']) selected @endif>
                 {{ $currency['name'] }}
             </option>
             @endforeach

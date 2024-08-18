@@ -25,6 +25,7 @@
 <body>
 
     <h2>Amounts</h2>
+  
     <form action="{{ route('amounts.store') }}" method="POST">
         @csrf
         <input type="number" name="amount" placeholder="Amount" required>

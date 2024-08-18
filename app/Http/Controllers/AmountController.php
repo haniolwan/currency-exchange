@@ -19,38 +19,43 @@ class AmountController extends Controller
             'amounts' => $amounts,
             'rates' => $rates,
             'currencies' => $currencies
-        ]);
+        ])->with('success', "Hello World");
     }
 
     public function update(AmountRequest $request, $id)
     {
         $validatedData = $request->validated();
-       
-        $rates = $this->loadJsonData('exchange-rates.json');
-        $amounts = $this->loadJsonData('transactions.json');
 
-       
-        $fromCurrency = $this->getCurrencyRecord($validatedData['from']);
-        $toCurrency = $this->getCurrencyRecord($validatedData['to']);
+        $exists = $this->checkIfExchangeExist($validatedData['from'], $validatedData['to']);
+        if ($exists) {
 
-        $newRecord = [
-            'id' => $id,
-            'from' => $fromCurrency,
-            'to' => $toCurrency,
-            'amount' => $validatedData['amount'],
-            'result' => $validatedData['amount'] * $rates[$validatedData['to']]['rate'],
-        ];
+            $rates = $this->loadJsonData('exchange-rates.json');
+            $amounts = $this->loadJsonData('transactions.json');
 
-        $updatedArray = array_map(function ($item) use ($id, $newRecord) {
-            if ($item['id'] == $id) {
-                foreach ($newRecord as $key => $value) {
-                    $item[$key] = $value;
+
+            $fromCurrency = $this->getCurrencyRecord($validatedData['from']);
+            $toCurrency = $this->getCurrencyRecord($validatedData['to']);
+
+            $newRecord = [
+                'id' => $id,
+                'from' => $fromCurrency,
+                'to' => $toCurrency,
+                'amount' => $validatedData['amount'],
+                'result' => $validatedData['amount'] * $rates[$validatedData['to']]['rate'],
+            ];
+
+            $updatedArray = array_map(function ($item) use ($id, $newRecord) {
+                if ($item['id'] == $id) {
+                    foreach ($newRecord as $key => $value) {
+                        $item[$key] = $value;
+                    }
                 }
-            }
-            return $item;
-        }, $amounts);
-        $this->updateAmounts($updatedArray); //update records
-        return redirect()->route('amounts.index')->with('success', 'Amount updated successfully!');
+                return $item;
+            }, $amounts);
+            $this->updateAmounts($updatedArray); //update records
+            return redirect()->route('amounts.index')->with('success', 'Amount updated successfully!');
+        }
+        return redirect()->route('amounts.index')->with('success', "Cannot update amount");
     }
 
 
@@ -68,23 +73,28 @@ class AmountController extends Controller
     {
         $validatedData = $request->validated();
 
-        $rates = $this->loadJsonData('exchange-rates.json');
-        $amounts = $this->loadJsonData('transactions.json');
+        $exists = $this->checkIfExchangeExist($validatedData['from'], $validatedData['to']);
+        if ($exists) {
 
-        $fromCurrency = $this->getCurrencyRecord($validatedData['from']);
-        $toCurrency = $this->getCurrencyRecord($validatedData['to']);
+            $rates = $this->loadJsonData('exchange-rates.json');
+            $amounts = $this->loadJsonData('transactions.json');
 
-        $newRecord = [
-            'id' => count($amounts),
-            'from' => $fromCurrency,
-            'to' => $toCurrency,
-            'amount' => $validatedData['amount'],
-            'result' => $validatedData['amount'] * $rates[$validatedData['to']]['rate'],
-        ];
+            $fromCurrency = $this->getCurrencyRecord($validatedData['from']);
+            $toCurrency = $this->getCurrencyRecord($validatedData['to']);
 
-        $amounts[] = $newRecord;
-        $this->updateAmounts($amounts);
-        return redirect()->route('amounts.index');
+            $newRecord = [
+                'id' => count($amounts),
+                'from' => $fromCurrency,
+                'to' => $toCurrency,
+                'amount' => $validatedData['amount'],
+                'result' => $validatedData['amount'] * $rates[$validatedData['to']]['rate'],
+            ];
+
+            $amounts[] = $newRecord;
+            $this->updateAmounts($amounts);
+            return redirect()->route('amounts.index')->with('success', "Amount added successfully");
+        }
+        return redirect()->route('amounts.index')->with('failed', "Exchange doesn't exist");
     }
 
     public function destroy($id): RedirectResponse
@@ -96,6 +106,17 @@ class AmountController extends Controller
         });
         $this->updateAmounts($data);
         return redirect()->route('amounts.index');
+    }
+
+    private function checkIfExchangeExist($fromId, $toId)
+    {
+        $amounts = $this->loadJsonData('transactions.json');
+
+        $data = array_filter($amounts, function ($record) use ($fromId, $toId) {
+            return $record['from']['id'] == $fromId && $record['to']['id'] == $toId;
+        });
+
+        return $data;
     }
 
     private function updateAmounts($data)
@@ -110,7 +131,7 @@ class AmountController extends Controller
         }
     }
 
-   
+
     private function getCurrencyRecord($id)
     {
         $currencies = $this->loadJsonData('currencies.json');
@@ -135,5 +156,4 @@ class AmountController extends Controller
         $data = json_decode($jsonData, true);
         return $data;
     }
-
 }
