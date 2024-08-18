@@ -25,23 +25,27 @@
 <body>
 
     <h2>Amounts</h2>
-  
+
     <form action="{{ route('amounts.store') }}" method="POST">
         @csrf
         <input type="number" name="amount" placeholder="Amount" required>
         <select name="from" id="from">
             <!-- From Currency -->
             <option value="" disabled selected="selected">Convert from </option>
+            @if(!empty($currencies))
             @foreach ($currencies as $currency)
             <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
             @endforeach
+            @endif
         </select>
         <select name="to" id="from">
             <!-- From Currency -->
             <option value="" disabled selected="selected">Convert to </option>
+            @if(!empty($currencies))
             @foreach ($currencies as $currency)
             <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
             @endforeach
+            @endif
         </select>
         <button type="submit">Add</button>
     </form>
@@ -54,6 +58,7 @@
 
         </tr>
         <tr>
+            @if(!empty($amounts))
             @foreach($amounts as $amount)
         <tr>
             <td>{{ $amount['amount']." ".$amount['from']['name']}}</td>
@@ -72,6 +77,7 @@
             </td>
         </tr>
         @endforeach
+        @endif
     </table>
     <ul>
         <li>

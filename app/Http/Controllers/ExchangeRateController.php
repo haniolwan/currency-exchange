@@ -6,6 +6,8 @@ use App\Http\Requests\ExchangeRateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
+use function PHPUnit\Framework\isEmpty;
+
 class ExchangeRateController extends Controller
 {
     public function index()
@@ -39,7 +41,7 @@ class ExchangeRateController extends Controller
             $toCurrency = $this->getCurrencyRecord($validatedData['to']);
 
             $newRecord = [
-                'id' => count($rates),
+                'id' => !isEmpty($rates) ? count($rates) : 0,
                 'from' => $fromCurrency,
                 'to' => $toCurrency,
                 'rate' => $validatedData['rate'],
@@ -60,7 +62,7 @@ class ExchangeRateController extends Controller
         $rates = $this->loadJsonData('data/exchange-rates.json');
 
         $exists = $this->checkIfRateExist($validatedData['from'], $validatedData['to']);
-        if (!$exists) {
+        if ($exists) {
 
             $fromCurrency = $this->getCurrencyRecord($validatedData['from']);
             $toCurrency = $this->getCurrencyRecord($validatedData['to']);
@@ -126,14 +128,17 @@ class ExchangeRateController extends Controller
         return $filtered->values()->all()[0];
     }
 
-    private function checkIfRateExist($fromCur, $toCur): bool
+    private function checkIfRateExist($fromCur, $toCur)
     {
         $rates = $this->loadJsonData('data/exchange-rates.json');
-        foreach ($rates as $rate) {
-            if ($rate['from']['id'] == $fromCur && $rate['to']['id'] == $toCur) {
-                return true;
+        if ($rates) {
+
+            foreach ($rates as $rate) {
+                if ($rate['from']['id'] == $fromCur && $rate['to']['id'] == $toCur) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 }

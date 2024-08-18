@@ -6,6 +6,8 @@ use App\Http\Requests\CurrencyRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
+use function PHPUnit\Framework\isEmpty;
+
 class CurrencyController extends Controller
 {
     public function index()
@@ -24,7 +26,7 @@ class CurrencyController extends Controller
 
         return view('currencies.update', ['currency' => $matchingCurr]);
     }
-    
+
 
     public function store(CurrencyRequest $request): RedirectResponse
     {
@@ -32,7 +34,7 @@ class CurrencyController extends Controller
 
         $currencies = $this->loadJsonData();
         $newRecord = [
-            'id' => count($currencies),
+            'id' => !isEmpty($currencies) ? count($currencies) : 0,
             'name' => $validatedData['name'],
         ];
 

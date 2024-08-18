@@ -3,9 +3,12 @@
 use App\Http\Controllers\AmountController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
+Route::get('/', [FileController::class, 'createFiles']);
 
 Route::resource('exchange_rates', ExchangeRateController::class);
 Route::get('exchange_rates/update/{id}', [ExchangeRateController::class, 'updateRate'])

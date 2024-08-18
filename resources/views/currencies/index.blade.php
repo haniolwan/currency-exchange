@@ -37,6 +37,7 @@
             <th>Currency</th>
             <th>Actions</th>
         </tr>
+        @if(!empty($currencies))
         @foreach($currencies as $currency)
         <tr>
             <td>{{$currency['name']}}</td>
@@ -54,6 +55,7 @@
             </td>
         </tr>
         @endforeach
+        @endif
         <tr>
 
     </table>

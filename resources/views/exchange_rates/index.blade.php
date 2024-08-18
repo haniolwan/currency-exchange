@@ -31,16 +31,20 @@
         <select name="from" id="from">
             <!-- From Currency -->
             <option value="" disabled selected="selected">Convert from </option>
+            @if(!empty($currencies))
             @foreach ($currencies as $currency)
             <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
             @endforeach
+            @endif
         </select>
-        <select name="to" id="from">
+        <select name="to" id="to">
             <!-- From Currency -->
             <option value="" disabled selected="selected">Convert to </option>
+            @if(!empty($currencies))
             @foreach ($currencies as $currency)
             <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
             @endforeach
+            @endif
         </select>
 
         <input type="number" name="rate" step="0.01" placeholder="Rate" required>
@@ -56,6 +60,7 @@
 
         </tr>
         <tr>
+            @if(!empty($rates))
             @foreach($rates as $rate)
         <tr>
             <td>{{$rate['from']['name']}}</td>
@@ -75,6 +80,7 @@
             </td>
         </tr>
         @endforeach
+        @endif
     </table>
 
     <ul>

@@ -7,6 +7,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+use function PHPUnit\Framework\isEmpty;
+
 class AmountController extends Controller
 {
     public function index()
@@ -83,7 +85,7 @@ class AmountController extends Controller
             $toCurrency = $this->getCurrencyRecord($validatedData['to']);
 
             $newRecord = [
-                'id' => count($amounts),
+                'id' => !isEmpty($amounts) ? count($amounts) : 0,
                 'from' => $fromCurrency,
                 'to' => $toCurrency,
                 'amount' => $validatedData['amount'],
@@ -110,13 +112,16 @@ class AmountController extends Controller
 
     private function checkIfExchangeExist($fromId, $toId)
     {
-        $amounts = $this->loadJsonData('transactions.json');
+        $rates = $this->loadJsonData('exchange-rates.json');
 
-        $data = array_filter($amounts, function ($record) use ($fromId, $toId) {
-            return $record['from']['id'] == $fromId && $record['to']['id'] == $toId;
-        });
+        if (($rates) > 0) {
 
-        return $data;
+            $data = array_filter($rates, function ($record) use ($fromId, $toId) {
+                return $record['from']['id'] == $fromId && $record['to']['id'] == $toId;
+            });
+
+            return $data;
+        }
     }
 
     private function updateAmounts($data)
