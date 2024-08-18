@@ -2,6 +2,24 @@
 <html>
 
 <head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
     <title>Exchange Rates</title>
 </head>
 
@@ -10,29 +28,66 @@
 
     <form action="{{ route('exchange_rates.store') }}" method="POST">
         @csrf
-        <input type="text" name="currency" placeholder="Currency" required>
+        <select name="from" id="from">
+            <!-- From Currency -->
+            <option value="" disabled selected="selected">Convert from </option>
+            @foreach ($currencies as $currency)
+            <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
+            @endforeach
+        </select>
+        <select name="to" id="from">
+            <!-- From Currency -->
+            <option value="" disabled selected="selected">Convert to </option>
+            @foreach ($currencies as $currency)
+            <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
+            @endforeach
+        </select>
+
         <input type="number" name="rate" step="0.01" placeholder="Rate" required>
         <button type="submit">Add</button>
     </form>
+    <br>
+    <table>
+        <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Rate</th>
+            <th>Actions</th>
+
+        </tr>
+        <tr>
+            @foreach($rates as $rate)
+        <tr>
+            <td>{{$rate['from']['name']}}</td>
+            <td>{{$rate['to']['name']}}</td>
+            <td>{{$rate['rate']}}</td>
+            <td>
+                <form action="{{ route('exchange_rates.destroy', $rate['id']) }}" method="post" style="display:inline-block">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit">Del</button>
+                </form>
+                <button>
+                    <a href="exchange_rates/update/{{$rate['id']}}">
+                        Update
+                    </a>
+                </button>
+            </td>
+        </tr>
+        @endforeach
+    </table>
 
     <ul>
-        @foreach ($currencies as $currency => $rate)
         <li>
-            <form action="{{ route('exchange_rates.destroy', $currency) }}" method="post">
-                @csrf
-                @method('DELETE')
-                <input type="hidden" name="currency" value="{{$currency}}">
-                <button type="submit">Delete</button>
-            </form>
-            <form action="{{ route('exchange_rates.update', $currency) }}" method="POST" style="display:inline;">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="currency" value="{{$currency}}">
-                {{ $currency }}: <input type="text" name="rate" value="{{ $rate }}">
-                <button type="submit">Update</button>
-            </form>
+            <a href="/amounts">
+                Amounts
+            </a>
         </li>
-        @endforeach
+        <li>
+            <a href="/currencies">
+                Currencies
+            </a>
+        </li>
     </ul>
 </body>
 

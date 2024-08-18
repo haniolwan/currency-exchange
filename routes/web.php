@@ -1,13 +1,23 @@
 <?php
 
 use App\Http\Controllers\AmountController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::resource('exchange_rates', ExchangeRateController::class);
+Route::get('exchange_rates/update/{id}', [ExchangeRateController::class, 'updateRate'])
+    ->name('update.rate');
+
+Route::resource('currencies', CurrencyController::class);
+Route::get('currencies/update/{id}', [CurrencyController::class, 'updateCurrencyPage'])
+    ->name('update.currency');
+
 Route::resource('amounts', AmountController::class);
+Route::get('amounts/update/{id}', [AmountController::class, 'updateAmountPage'])
+    ->name('update.amount');
 
 
 Route::get('/dashboard', function () {

@@ -28,14 +28,18 @@
     <form action="{{ route('amounts.store') }}" method="POST">
         @csrf
         <input type="number" name="amount" placeholder="Amount" required>
-        <select name="to">
-            <!-- To Currency -->
-            <option value="" disabled selected>Select To Curr</option>
-            @foreach ($currencies as $currency => $rate)
-            <option value="{{ $currency }}"
-                @if ($currency==old('To', $currency))
-                selected="selected"
-                @endif>{{ $currency }}</option>
+        <select name="from" id="from">
+            <!-- From Currency -->
+            <option value="" disabled selected="selected">Convert from </option>
+            @foreach ($currencies as $currency)
+            <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
+            @endforeach
+        </select>
+        <select name="to" id="from">
+            <!-- From Currency -->
+            <option value="" disabled selected="selected">Convert to </option>
+            @foreach ($currencies as $currency)
+            <option value="{{ $currency['id'] }}">{{ $currency['name'] }}</option>
             @endforeach
         </select>
         <button type="submit">Add</button>
@@ -45,23 +49,41 @@
         <tr>
             <th>Amount</th>
             <th>To</th>
-            <th>Result</th>
             <th>Actions</th>
 
         </tr>
         <tr>
             @foreach($amounts as $amount)
         <tr>
-            <td>{{ $amount['amount'] }}</td>
-            <td>{{ $amount['to'] }}</td>
-            <td>{{ $amount['result'] }}</td>
+            <td>{{ $amount['amount']." ".$amount['from']['name']}}</td>
+            <td>{{ $amount['result']." ".$amount['to']['name'] }}</td>
             <td>
-                <button>Del</button>
-                <button>Update</button>
+                <form action="{{ route('amounts.destroy', $amount['id']) }}" method="post" style="display: inline-block;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit">Del</button>
+                </form>
+                <button>
+                    <a href="amounts/update/{{ $amount['id'] }}">
+                        Update
+                    </a>
+                </button>
             </td>
         </tr>
         @endforeach
     </table>
+    <ul>
+        <li>
+            <a href="/exchange_rates">
+                Exchange Rates
+            </a>
+        </li>
+        <li>
+            <a href="/currencies">
+                Currencies
+            </a>
+        </li>
+    </ul>
 </body>
 
 </html>
